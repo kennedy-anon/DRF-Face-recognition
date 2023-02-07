@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     #internal apps
     'api',
     'train',
+    'testModel',
 ]
 
 MIDDLEWARE = [
