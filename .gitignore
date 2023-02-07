@@ -1,0 +1,18 @@
+# Django settings file
+*.env
+*.pyc
+__pycache__/
+local_settings.py
+
+# Media files
+media/
+
+# virtualenv
+.venv/
+
+# pipenv
+Pipfile
+Pipfile.
+
+#distribution/ packaging
+lib/ 
