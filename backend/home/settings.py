@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     #internal apps
+    'api',
+    'train',
 ]
 
 MIDDLEWARE = [
