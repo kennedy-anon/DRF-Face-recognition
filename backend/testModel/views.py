@@ -5,9 +5,13 @@ import cv2
 import face_recognition
 import os
 import tempfile
-#from tempfile import NamedTemporaryFile
 
 from .serializers import ImageSerializer
+
+#comparing the face encoding with the known encoding vectors
+def compareFaceVectors(face_encodings, face_locations):
+    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+        matches = face_recognition.compare_faces( face_encoding)
 
  
 class RecognizeFaceView(generics.CreateAPIView):
@@ -35,11 +39,10 @@ class RecognizeFaceView(generics.CreateAPIView):
 
         #confirming the image has a face
         if face_locations:
-            print("there is a face")
+            #calculating the face encoding vector
+            face_encodings = face_recognition.face_encodings(loaded_image, face_locations)
+            return Response(face_encodings)
         else:
-            print(face_locations)
-            print("there is no face")
-
-        return Response(face_locations)
+            return Response({"detail": "Ensure the uploaded image has a face and its clear."}, status=400)
 
 recognize_image_view = RecognizeFaceView.as_view()

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 import face_recognition
 
 from .serializers import ImageSerializer
+from .models import FaceName, FaceEncoding
 
 
 class ImagesUploadView(generics.CreateAPIView):
@@ -22,10 +23,15 @@ class ImagesUploadView(generics.CreateAPIView):
             #calculating face enconding vectors
             loaded_image = face_recognition.load_image_file(image)
             enconding = face_recognition.face_encodings(loaded_image)[0]
+            name = (image.name.split("."))[0]
+
+            # saving the encoding to the database
+            face_name, created = FaceName.objects.get_or_create(face_name=name)
+            face_encoding = FaceEncoding.objects.create(face_id=face_name, face_encoding=enconding)
             
             self.known_name_encodings.append(enconding)
-            self.known_names.append(image.name.capitalize())
+            self.known_names.append(name)
 
-        return Response(self.known_name_encodings)
+        return Response({"Message": "Training completed successfully."})
 
 receive_images_view = ImagesUploadView.as_view()
