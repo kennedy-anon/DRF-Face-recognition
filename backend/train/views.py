@@ -32,6 +32,7 @@ class ImagesUploadView(generics.CreateAPIView):
             self.known_name_encodings.append(enconding)
             self.known_names.append(name)
 
-        return Response({"Message": "Training completed successfully."})
+        #return Response({"Message": "Training completed successfully."})
+        return Response(self.known_name_encodings)
 
 receive_images_view = ImagesUploadView.as_view()
