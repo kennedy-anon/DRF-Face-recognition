@@ -2,11 +2,34 @@ from rest_framework import generics
 from rest_framework.response import Response
 
 import face_recognition
+import pymongo
 
 from .serializers import ImageSerializer
-from .models import FaceName, FaceEncoding
+from .models import FaceName #, FaceEncoding
+
+#connecting to mongodb
+client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
+
+#Define mongoDB Name
+db = client['face_encoding_vectors']
+
+#Define mongoDB Collection
+collection = db['face_encodings']
 
 
+#storing face encodings in mongoDB
+def store_face_encodings(face_id, face_encoding):
+    print(face_id)
+    print(face_encoding.dtype)
+    face_encoding_values = {
+        "face_id": face_id,
+        "face_encoding": face_encoding.tolist()
+    }
+
+    collection.insert_one(face_encoding_values)
+
+
+# receives the training face images
 class ImagesUploadView(generics.CreateAPIView):
     serializer_class = ImageSerializer
     known_names = []
@@ -25,9 +48,12 @@ class ImagesUploadView(generics.CreateAPIView):
             enconding = face_recognition.face_encodings(loaded_image)[0]
             name = (image.name.split("."))[0]
 
-            # saving the encoding to the database
+            # saving the face name to mysql database
             face_name, created = FaceName.objects.get_or_create(face_name=name)
-            face_encoding = FaceEncoding.objects.create(face_id=face_name, face_encoding=enconding)
+            stored_face_id = face_name.face_id
+
+            # saving the face encoding to the mongoDB database
+            store_face_encodings(stored_face_id, enconding)
             
             self.known_name_encodings.append(enconding)
             self.known_names.append(name)

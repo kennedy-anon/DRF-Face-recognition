@@ -10,3 +10,5 @@ dlib
 numpy
 opencv-python
 face_recognition
+pymongo[snappy,gssapi,srv,tls]
+dnspython

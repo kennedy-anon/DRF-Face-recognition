@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from .models import FaceEncoding, FaceName
+#import ast
+
+from .models import FaceName #FaceEncoding,
 
 
 # serializes the training images
@@ -18,6 +20,7 @@ class FaceNameSerializer(serializers.ModelSerializer):
         ]
 
 
+'''
 # serializes the face_encodings
 class FaceEncodingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +29,9 @@ class FaceEncodingSerializer(serializers.ModelSerializer):
             'face_id',
             'face_encoding'
         ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['face_encoding'] = ast.literal_eval(representation['face_encoding'])
+        return representation
+        '''

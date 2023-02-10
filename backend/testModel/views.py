@@ -7,21 +7,25 @@ import os
 import tempfile
 
 from .serializers import ImageSerializer
-from train.models import FaceEncoding
+#from train.models import FaceEncoding
+#from train.serializers import FaceEncodingSerializer
 
 
+'''
 # fetching the face encodings
 def fetch_face_encodings():
     face_encodings = FaceEncoding.objects.all()[:2]
     known_encodings = []
 
     for face_encoding in face_encodings:
-        encoding = face_encoding.face_encoding
+        #serializer = FaceEncodingSerializer(face_encoding)
+        encoding = [float(x) for x in face_encoding.face_encoding.strip().split()]
         known_encodings.append(encoding)
 
     print(known_encodings)
 
     return known_encodings
+    '''
 
 
 
@@ -59,8 +63,8 @@ class RecognizeFaceView(generics.CreateAPIView):
             #calculating the face encoding vector
             face_encodings = face_recognition.face_encodings(loaded_image, face_locations)
 
-            testing_tt = fetch_face_encodings()
-            return Response(testing_tt)
+            #testing_tt = fetch_face_encodings()
+            return Response()#testing_tt
         else:
             return Response({"detail": "Ensure the uploaded image has a face and its clear."}, status=400)
 

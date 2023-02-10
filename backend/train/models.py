@@ -7,7 +7,9 @@ class FaceName(models.Model):
     face_name = models.TextField(max_length=255)
 
 
+'''
 # storing face encodings
 class FaceEncoding(models.Model):
     face_id = models.ForeignKey(FaceName, on_delete=models.CASCADE)
     face_encoding = models.TextField()
+'''
