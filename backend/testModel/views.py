@@ -43,23 +43,24 @@ def compareFaceVectors(face_encodings, face_locations):
         #matching...returns boolean list...default tolerance 0.6
         matches = face_recognition.compare_faces(RecognizeFaceView.known_face_encodings, face_encoding)
         face_id = ""
-        print(matches)
+        #print(matches)
 
         # calculating similarity between unknown image and known images encodings
         #the smaller the face_distance the more similar the face...Euclidean distance
         face_distances = face_recognition.face_distance(RecognizeFaceView.known_face_encodings, face_encoding)
         # retrieving min value
         best_match = np.argmin(face_distances)
-        print(face_distances)
+        #print(face_distances)
 
         if matches[best_match]:
             #getting the face id for the match
             face_id = RecognizeFaceView.known_face_ids[best_match]
             face_name = retrieve_face_name(face_id)
 
+            # edit to handle multiple faces in one photo
             return face_name
         else:
-            return None
+            return "There was no match."
         
  
  # the view for recognizing unknown image
