@@ -19,8 +19,6 @@ collection = db['face_encodings']
 
 #storing face encodings in mongoDB
 def store_face_encodings(face_id, face_encoding):
-    print(face_id)
-    print(face_encoding.dtype)
     face_encoding_values = {
         "face_id": face_id,
         "face_encoding": face_encoding.tolist()
@@ -32,8 +30,6 @@ def store_face_encodings(face_id, face_encoding):
 # receives the training face images
 class ImagesUploadView(generics.CreateAPIView):
     serializer_class = ImageSerializer
-    known_names = []
-    known_name_encodings = []
 
     def post(self, request, *args, **kwargs):
 
@@ -54,11 +50,7 @@ class ImagesUploadView(generics.CreateAPIView):
 
             # saving the face encoding to the mongoDB database
             store_face_encodings(stored_face_id, enconding)
-            
-            self.known_name_encodings.append(enconding)
-            self.known_names.append(name)
 
-        #return Response({"Message": "Training completed successfully."})
-        return Response(self.known_name_encodings)
+        return Response({"Message": "Training completed successfully."})
 
 receive_images_view = ImagesUploadView.as_view()

@@ -3,30 +3,30 @@ from rest_framework.response import Response
 
 import cv2
 import face_recognition
+import numpy as np
 import os
 import tempfile
+import pymongo
 
 from .serializers import ImageSerializer
-#from train.models import FaceEncoding
-#from train.serializers import FaceEncodingSerializer
+
+#connecting to mongodb
+client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
+
+#Declare mongoDB Name
+db = client['face_encoding_vectors']
+
+#Declare mongoDB Collection
+collection = db['face_encodings']
 
 
-'''
-# fetching the face encodings
+# fetching the face encodings from mongoDB
 def fetch_face_encodings():
-    face_encodings = FaceEncoding.objects.all()[:2]
-    known_encodings = []
+    face_encodings_doc = list(collection.find({}))
+    face_ids, face_encodings = [face_doc["face_id"] for face_doc in face_encodings_doc], [face_doc["face_encoding"] for face_doc in face_encodings_doc]
 
-    for face_encoding in face_encodings:
-        #serializer = FaceEncodingSerializer(face_encoding)
-        encoding = [float(x) for x in face_encoding.face_encoding.strip().split()]
-        known_encodings.append(encoding)
-
-    print(known_encodings)
-
-    return known_encodings
-    '''
-
+    RecognizeFaceView.known_face_encodings = np.array(face_encodings)
+    RecognizeFaceView.known_face_ids = face_ids
 
 
 #comparing the face encoding with the known encoding vectors
@@ -37,6 +37,8 @@ def compareFaceVectors(face_encodings, face_locations):
  
 class RecognizeFaceView(generics.CreateAPIView):
     serializer_class = ImageSerializer
+    known_face_encodings = []
+    known_face_ids = []
     
     def post(self, request, *args, **kwargs):
         # validating the image
@@ -63,8 +65,11 @@ class RecognizeFaceView(generics.CreateAPIView):
             #calculating the face encoding vector
             face_encodings = face_recognition.face_encodings(loaded_image, face_locations)
 
-            #testing_tt = fetch_face_encodings()
-            return Response()#testing_tt
+            if len(self.known_face_encodings) == 0:
+                # fetches known encodings if not available
+                fetch_face_encodings()
+ 
+            return Response({"message": "Testing Api"})
         else:
             return Response({"detail": "Ensure the uploaded image has a face and its clear."}, status=400)
 
