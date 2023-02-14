@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 #import ast
 
-from .models import FaceName #FaceEncoding,
+from .models import FaceName, NewEncoding #FaceEncoding,
 
 
 # serializes the training images
@@ -20,6 +20,15 @@ class FaceNameSerializer(serializers.ModelSerializer):
         ]
 
 
+# serializing the NewEncodings updates
+class NewEncodingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewEncoding
+        fields = [
+            'unfetchedEncoding'
+        ]
+
+        
 '''
 # serializes the face_encodings
 class FaceEncodingSerializer(serializers.ModelSerializer):

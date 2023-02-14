@@ -7,6 +7,11 @@ class FaceName(models.Model):
     face_name = models.TextField(max_length=255)
 
 
+# stores True or False to notify of new encodings
+class NewEncoding(models.Model):
+    unfetchedEncoding = models.BooleanField(default=True)
+
+
 '''
 # storing face encodings
 class FaceEncoding(models.Model):
