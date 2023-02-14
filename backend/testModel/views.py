@@ -62,8 +62,28 @@ def composeResponse(face_name, face_image):
             }'''
  
 
+# drawing a rectangle to enclose the face
+def drawFaceRectangle(top, right, bottom, left, face_image, face_index, face_name, green, blue):
+    # green rectacgle for a match and red for unknown
+    cv2.rectangle(face_image, (left, top), (right, bottom), (0, green, blue), 2)
+    cv2.rectangle(face_image, (left, bottom - 15), (right, bottom), (0, green, blue), cv2.FILLED)
+    font = cv2.FONT_HERSHEY_DUPLEX
+
+    if face_name != "Unknown":
+        # identified face ..green rectangle
+        cv2.putText(face_image, str(face_index) + "." + face_name, (left + 6, bottom - 6 ), font, 1.0, (255, 255, 255), 1)
+    else:
+        # unknown face image ..red rectangle
+        cv2.putText(face_image, str(face_index) + "." + face_name, (left + 6, bottom - 6 ), font, 1.0, (255, 255, 255), 1)
+    
+    return face_image
+
+
 #comparing the face encoding with the known encoding vectors
 def compareFaceVectors(face_encodings, face_locations, face_image):
+    face_names = [] # for multiple faces in one image
+    face_index = 1 # for labelling faces...face 1 matches to index 0 on face_names...
+
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
         #matching...returns boolean list...default tolerance 0.6
         matches = face_recognition.compare_faces(RecognizeFaceView.known_face_encodings, face_encoding)
@@ -80,18 +100,25 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
         if matches[best_match]:
             #getting the face id for the match
             face_id = RecognizeFaceView.known_face_ids[best_match]
-            face_name = retrieve_face_name(face_id)
+            face_name = (retrieve_face_name(face_id)).capitalize()
 
-            #drawing a rectangle on the face image
-            cv2.rectangle(face_image, (left, top), (right, bottom), (0, 0, 255), 2)
+            face_names.append(face_name)
 
-            # create response
-            response_data = composeResponse(face_name, face_image)
+            #drawing a green rectangle on the face image
+            face_image = drawFaceRectangle(top, right, bottom, left, face_image, face_index, face_name, 255, 0)
 
-            # edit to handle multiple faces in one photo...to be done later
-            return response_data
         else:
-            return {"Message": "There was no match."}
+            face_name = "No match found."
+            face_names.append(face_name)
+
+            # red rectangle for no match
+            face_image = drawFaceRectangle(top, right, bottom, left, face_image, face_index, "Unknown", 0, 255)
+
+        face_index += 1
+
+    # create response
+    response_data = composeResponse(face_names, face_image)
+    return response_data
         
  
  # the view for recognizing unknown image
