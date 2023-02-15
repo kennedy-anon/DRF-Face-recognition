@@ -27,6 +27,17 @@ def store_face_encodings(face_id, face_encoding):
     collection.insert_one(face_encoding_values)
 
 
+# notifying the testModel view of changes in faceEncodings
+def newFaceEncodings():
+    # created is true or false
+    update, created = NewUpdates.objects.get_or_create(updateCategory='unfetchedEncodings', defaults={'newChanges': True})
+
+    if not created:
+        # update existing instance   
+        update.newChanges = True
+        update.save()
+
+
 # receives the training face images
 class ImagesUploadView(generics.CreateAPIView):
     serializer_class = ImageSerializer
@@ -52,9 +63,7 @@ class ImagesUploadView(generics.CreateAPIView):
             store_face_encodings(stored_face_id, enconding)
 
         #notifying testModel view of new changes
-        update, created = NewUpdates.objects.get_or_create(updateCategory='unfetchedEncodings', newChanges = True)   
-        update.newChanges = True
-        update.save()
+        newFaceEncodings()
 
         return Response({"Message": "Training completed successfully."})
 

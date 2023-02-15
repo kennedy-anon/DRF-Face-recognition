@@ -164,7 +164,7 @@ class RecognizeFaceView(generics.CreateAPIView):
             #calculating the face encoding vector
             face_encodings = face_recognition.face_encodings(loaded_image, face_locations)
 
-            if len(self.known_face_encodings) == 0 or checkNewEncodings():
+            if checkNewEncodings() or len(self.known_face_encodings) == 0:
                 # fetches known encodings if not available or if there have been an update
                 fetch_face_encodings()
             

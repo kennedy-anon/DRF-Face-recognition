@@ -19,14 +19,6 @@ class FaceNameSerializer(serializers.ModelSerializer):
             'face_name'
         ]
 
-'''# serializes new updates
-class NewUpdatesSerializer(serializers.ModelSerializer):
-    class meta:
-        model = NewUpdates
-        fields = [
-            'updateCategory',
-            'newChanges'
-        ]'''
 
 '''
 # serializes the face_encodings

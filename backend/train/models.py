@@ -8,7 +8,7 @@ class FaceName(models.Model):
 
 # for notifying of any new changes like new encondings
 class NewUpdates(models.Model):
-    updateCategory = models.CharField(max_length=40)
+    updateCategory = models.CharField(max_length=40, unique=True)
     newChanges = models.BooleanField()
 
 '''
