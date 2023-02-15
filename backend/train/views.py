@@ -5,7 +5,7 @@ import face_recognition
 import pymongo
 
 from .serializers import ImageSerializer
-from .models import FaceName #, FaceEncoding
+from .models import FaceName #NewUpdates #, FaceEncoding
 
 #connecting to mongodb
 client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
@@ -50,6 +50,11 @@ class ImagesUploadView(generics.CreateAPIView):
 
             # saving the face encoding to the mongoDB database
             store_face_encodings(stored_face_id, enconding)
+
+        '''#notifying testModel view of new changes
+        update, created = NewUpdates.objects.get_or_create(updateCategory='unfetchedEncodings')   
+        update.newChanges = True
+        update.save()'''
 
         return Response({"Message": "Training completed successfully."})
 
