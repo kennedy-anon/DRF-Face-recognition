@@ -10,7 +10,7 @@ import pymongo
 import base64
 
 from .serializers import ImageSerializer
-from train.models import FaceName
+from train.models import FaceName, NewUpdates
 
 #connecting to mongodb
 client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
@@ -77,6 +77,18 @@ def drawFaceRectangle(top, right, bottom, left, face_image, face_index, face_nam
         cv2.putText(face_image, str(face_index) + "." + face_name, (left + 6, bottom - 6 ), font, 1.0, (255, 255, 255), 1)
     
     return face_image
+
+
+# check if there has been new encodings after previous fetch
+def checkNewEncodings():
+    update = NewUpdates.objects.get(updateCategory='unfetchedEncodings')
+    unfetchedEncodings = update.newChanges
+
+    if update.newChanges:
+        update.newChanges = False
+        update.save()
+
+    return unfetchedEncodings
 
 
 #comparing the face encoding with the known encoding vectors
@@ -152,8 +164,8 @@ class RecognizeFaceView(generics.CreateAPIView):
             #calculating the face encoding vector
             face_encodings = face_recognition.face_encodings(loaded_image, face_locations)
 
-            if len(self.known_face_encodings) == 0:
-                # fetches known encodings if not available
+            if len(self.known_face_encodings) == 0 or checkNewEncodings():
+                # fetches known encodings if not available or if there have been an update
                 fetch_face_encodings()
             
             #finding a match
