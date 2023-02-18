@@ -10,6 +10,7 @@ import pymongo
 import base64
 
 from .serializers import ImageSerializer
+from .models import FaceSearchLog
 from train.models import FaceName, NewUpdates
 from api.permissions import IsCrimeOfficerPermission
 
@@ -92,6 +93,12 @@ def checkNewEncodings():
     return unfetchedEncodings
 
 
+# creating a search face log
+def logFaceSearch(face_id):
+    user_id = RecognizeFaceView.authenticated_user_id
+    FaceSearchLog(user_id=user_id, face_id=face_id).save()
+
+
 #comparing the face encoding with the known encoding vectors
 def compareFaceVectors(face_encodings, face_locations, face_image):
     face_names = [] # for multiple faces in one image
@@ -106,7 +113,7 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
         # calculating similarity between unknown image and known images encodings
         #the smaller the face_distance the more similar the face...Euclidean distance
         face_distances = face_recognition.face_distance(RecognizeFaceView.known_face_encodings, face_encoding)
-        # retrieving min value
+        # retrieving min value...returns an index
         best_match = np.argmin(face_distances)
         #print(face_distances)
 
@@ -119,6 +126,9 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
 
             #drawing a green rectangle on the face image
             face_image = drawFaceRectangle(top, right, bottom, left, face_image, face_index, face_name, 255, 0)
+
+            # logging a face search entry
+            logFaceSearch(face_id)
 
         else:
             face_name = "No match found."
@@ -142,8 +152,12 @@ class RecognizeFaceView(generics.CreateAPIView):
 
     known_face_encodings = []
     known_face_ids = []
+    authenticated_user_id = ''
 
     def post(self, request, *args, **kwargs):
+        # retrieve user id for search log
+        authenticated_user_id = request.user.id
+
         # validating the image
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
