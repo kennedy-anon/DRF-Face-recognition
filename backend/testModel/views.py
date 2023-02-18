@@ -9,8 +9,7 @@ import tempfile
 import pymongo
 import base64
 
-from .serializers import ImageSerializer
-from .models import FaceSearchLog
+from .serializers import ImageSerializer, FaceSearchLogSerializer
 from train.models import FaceName, NewUpdates
 from api.permissions import IsCrimeOfficerPermission
 
@@ -95,8 +94,18 @@ def checkNewEncodings():
 
 # creating a search face log
 def logFaceSearch(face_id):
-    user_id = RecognizeFaceView.authenticated_user_id
-    FaceSearchLog(user_id=user_id, face_id=face_id).save()
+    serializer = FaceSearchLogSerializer(data={
+        'user_id': RecognizeFaceView.authenticated_user_id,
+        'face_id': face_id
+    })
+
+    if serializer.is_valid():
+        serializer.save()
+
+    '''...without using serializers
+    user = User.objects.get(id=RecognizeFaceView.authenticated_user_id)
+    face = FaceName.objects.get(face_id=face_id)
+    FaceSearchLog(user_id=user, face_id=face).save()'''
 
 
 #comparing the face encoding with the known encoding vectors
@@ -155,8 +164,8 @@ class RecognizeFaceView(generics.CreateAPIView):
     authenticated_user_id = ''
 
     def post(self, request, *args, **kwargs):
-        # retrieve user id for search log
-        authenticated_user_id = request.user.id
+        # retrieve user id for search logging
+        RecognizeFaceView.authenticated_user_id = request.user.id
 
         # validating the image
         serializer = self.get_serializer(data=request.data)
