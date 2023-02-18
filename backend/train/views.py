@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import authentication, generics, permissions
 from rest_framework.response import Response
 
 import face_recognition
@@ -6,6 +6,7 @@ import pymongo
 
 from .serializers import ImageSerializer
 from .models import FaceName, NewUpdates #, FaceEncoding
+from api.permissions import IsSystemAdminPermission
 
 #connecting to mongodb
 client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
@@ -41,6 +42,8 @@ def newFaceEncodings():
 # receives the training face images
 class ImagesUploadView(generics.CreateAPIView):
     serializer_class = ImageSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsSystemAdminPermission]
 
     def post(self, request, *args, **kwargs):
 
