@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import authentication, generics, permissions
 from rest_framework.response import Response
 
 import cv2
@@ -11,6 +11,7 @@ import base64
 
 from .serializers import ImageSerializer
 from train.models import FaceName, NewUpdates
+from api.permissions import IsCrimeOfficerPermission
 
 #connecting to mongodb
 client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
@@ -133,9 +134,12 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
     return response_data
         
  
- # the view for recognizing unknown image
+# the view for recognizing unknown image
 class RecognizeFaceView(generics.CreateAPIView):
     serializer_class = ImageSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsCrimeOfficerPermission]
+
     known_face_encodings = []
     known_face_ids = []
 
