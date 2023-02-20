@@ -156,8 +156,8 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
 # the view for recognizing unknown image
 class RecognizeFaceView(generics.CreateAPIView):
     serializer_class = ImageSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsCrimeOfficerPermission]
+    #authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsCrimeOfficerPermission]
 
     known_face_encodings = []
     known_face_ids = []

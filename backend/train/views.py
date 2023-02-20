@@ -42,8 +42,8 @@ def newFaceEncodings():
 # receives the training face images
 class ImagesUploadView(generics.CreateAPIView):
     serializer_class = ImageSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsSystemAdminPermission]
+    #authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsSystemAdminPermission]
 
     def post(self, request, *args, **kwargs):
 

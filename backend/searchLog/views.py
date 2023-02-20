@@ -9,7 +9,7 @@ from api.permissions import IsSeniorOfficerPermission
 class FaceSearchLogView(generics.ListAPIView):
     queryset = FaceSearchLog.objects.all()
     serializer_class = FaceSearchLogSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsSeniorOfficerPermission]
+    #authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsSeniorOfficerPermission]
 
 search_log_view = FaceSearchLogView.as_view()
