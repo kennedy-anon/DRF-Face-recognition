@@ -15,5 +15,6 @@ urlpatterns = [
     # application paths
     path('train/', include('train.urls')),
     path('recognize/', include('testModel.urls')),
-    path('logs/', include('searchLog.urls'))
+    path('logs/', include('searchLog.urls')),
+    path('auth/', include('user.urls'))
 ]

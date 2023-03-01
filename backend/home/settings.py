@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'api',
     'train',
     'testModel',
-    'searchLog'
+    'searchLog',
+    'user'
 ]
 
 MIDDLEWARE = [
