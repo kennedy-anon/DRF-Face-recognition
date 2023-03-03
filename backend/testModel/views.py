@@ -216,6 +216,6 @@ class RecognizeFaceView(generics.CreateAPIView):
  
             return Response(send_response, status=200)
         else:
-            return Response({"Message": "Ensure the uploaded image has a face and its clear."}, status=400)
+            return Response({"detail": "Ensure the uploaded image has a face and its clear."}, status=400)
 
 recognize_image_view = RecognizeFaceView.as_view()
