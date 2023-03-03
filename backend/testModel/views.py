@@ -41,13 +41,13 @@ def retrieve_face_name(face_id):
 
 
 # compose the return response
-def composeResponse(face_name, face_image):
+def composeResponse(face_details, face_image):
     # converting image to bas64
     image_str = cv2.imencode('.jpg', face_image)[1].tostring()
     b64_image = base64.b64encode(image_str).decode('utf-8')
 
     data = {
-        'face_name': face_name,
+        'face_detail': face_details,
         'face_image': b64_image
     }
 
@@ -108,9 +108,21 @@ def logFaceSearch(face_id):
     FaceSearchLog(user_id=user, face_id=face).save()'''
 
 
+# creating a face detail for every face in the image
+def faceDetail(face_index, face_name, face_id):
+    face_detail = {
+                'face_no': face_index,
+                'face_name': face_name,
+                'face_id': face_id
+            }
+    
+    return face_detail
+
+
 #comparing the face encoding with the known encoding vectors
 def compareFaceVectors(face_encodings, face_locations, face_image):
-    face_names = [] # for multiple faces in one image
+    face_details = [] # stores the details of the face
+    # face_names = [] # for multiple faces in one image
     face_index = 1 # for labelling faces...face 1 matches to index 0 on face_names...
 
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
@@ -131,7 +143,9 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
             face_id = RecognizeFaceView.known_face_ids[best_match]
             face_name = (retrieve_face_name(face_id)).capitalize()
 
-            face_names.append(face_name)
+            # face_names.append(face_name)
+
+            face_details.append(faceDetail(face_index, face_name, face_id)) # composing face details
 
             #drawing a green rectangle on the face image
             face_image = drawFaceRectangle(top, right, bottom, left, face_image, face_index, face_name, 255, 0)
@@ -141,7 +155,9 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
 
         else:
             face_name = "No match found."
-            face_names.append(face_name)
+            # face_names.append(face_name)
+
+            face_details.append(faceDetail(face_index, face_name, face_id)) # composing face details
 
             # red rectangle for no match
             face_image = drawFaceRectangle(top, right, bottom, left, face_image, face_index, "Unknown", 0, 255)
@@ -149,7 +165,7 @@ def compareFaceVectors(face_encodings, face_locations, face_image):
         face_index += 1
 
     # create response
-    response_data = composeResponse(face_names, face_image)
+    response_data = composeResponse(face_details, face_image)
     return response_data
         
  
