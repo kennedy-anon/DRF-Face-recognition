@@ -11,10 +11,12 @@ class FaceSearchLogSerializer(serializers.ModelSerializer):
     # face_name = serializers.StringRelatedField(source='face_id.face_name')
     face_name = serializers.SerializerMethodField()
     search_date = serializers.DateTimeField(source='created_at')
+    log_id = serializers.IntegerField(source='id')
 
     class Meta:
         model = FaceSearchLog
         fields = [
+            'log_id',
             'crime_officer_id',
             'crime_officer_name',
             'face_id',
