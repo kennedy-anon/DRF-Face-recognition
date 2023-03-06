@@ -36,7 +36,7 @@ class ChangePasswordView(generics.UpdateAPIView):
             # check if old passwords match
             old_password = serializer.validated_data.get('old_password')
             if not user.check_password(old_password):
-                return Response({'old_password': ['Wrong password.']}, status=400)
+                return Response({'old_password': ['Incorrect old password.']}, status=400)
             
             # check if the new password meets the password policy
             new_password = serializer.validated_data.get('new_password')
