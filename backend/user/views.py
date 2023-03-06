@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -53,3 +54,14 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(serializer.errors, status=400)
     
 change_password_view = ChangePasswordView.as_view()
+
+
+# retrieving the access groups of the authenticated user
+class AccessGroupsView(APIView):
+    def get(self, request, format=None):
+        user = request.user
+        groups  = user.groups.all()
+        group_names = [group.name for group in groups]
+        return Response({'groups': group_names})
+    
+access_groups_view = AccessGroupsView.as_view()
