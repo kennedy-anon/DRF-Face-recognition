@@ -14,7 +14,7 @@ from train.models import FaceName, NewUpdates
 from api.permissions import IsCrimeOfficerPermission
 
 #connecting to mongodb
-client = pymongo.MongoClient("mongodb+srv://Kennedy:Les5OoybneIII08V@cluster0.dtj0s4t.mongodb.net/?retryWrites=true&w=majority")
+client = pymongo.MongoClient("MongoDB URL")
 
 #Declare mongoDB Name
 db = client['face_encoding_vectors']
